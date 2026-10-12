@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { chains } from "@/lib/data";
 import type { ChainId, Fiat } from "@/lib/types";
 import { PrefsProvider, usePrefs } from "./prefs";
+import { ChainName } from "./coin";
 
 const FIATS: Fiat[] = ["NOK", "SEK", "DKK", "EUR", "USD"];
 
@@ -63,8 +63,7 @@ function Shell({ chain, children }: { chain?: ChainId; children: ReactNode }) {
             <nav className="chains" aria-label="Chain">
               {(["nexa", "bch"] as ChainId[]).map((id) => (
                 <Link key={id} href={`/${id}`} aria-current={id === resolved ? "page" : undefined}>
-                  <span className={`pip ${id}`} aria-hidden="true" />
-                  {chains[id].name}
+                  <ChainName chain={id} />
                 </Link>
               ))}
             </nav>
@@ -151,8 +150,8 @@ function Shell({ chain, children }: { chain?: ChainId; children: ReactNode }) {
           <div>
             <h2>Chains</h2>
             <ul>
-              <li><Link href="/nexa">Nexa</Link></li>
-              <li><Link href="/bch">Bitcoin Cash</Link></li>
+              <li><Link href="/nexa"><ChainName chain="nexa" /></Link></li>
+              <li><Link href="/bch"><ChainName chain="bch" /></Link></li>
               <li><Link href={`/${resolved}/mempool`}>Mempool</Link></li>
               <li><Link href={`/${resolved}/tokens`}>Tokens</Link></li>
             </ul>

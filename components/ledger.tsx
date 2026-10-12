@@ -4,11 +4,12 @@ import { formatAge, formatBytes, formatCoin, formatGap, formatNumber, formatToke
 import type { Address, Block, ChainId, Tx, TxSide } from "@/lib/types";
 import { CopyButton } from "./copy-button";
 import { Money } from "./money";
+import { ChainName } from "./coin";
 
 function Crumb({ chainId, current }: { chainId: ChainId; current: string }) {
   return (
     <nav className="crumb" aria-label="Breadcrumb">
-      <Link href={`/${chainId}`}>{chains[chainId].name}</Link>
+      <Link href={`/${chainId}`}><ChainName chain={chainId} /></Link>
       <span aria-hidden="true"> · </span>
       <span>{current}</span>
     </nav>
@@ -45,7 +46,7 @@ export function BlockView({ block }: { block: Block }) {
   return (
     <>
       <Crumb chainId={block.chain} current={`Block ${formatNumber(block.height)}`} />
-      <p className="eyebrow">Block · {chain.name}</p>
+      <p className="eyebrow">Block · <ChainName chain={chain.id} /></p>
       <h1 className="num">#{formatNumber(block.height)}</h1>
       <p className="lead">
         {formatAge(block.time)}. {formatWhen(block.time)}.
@@ -186,7 +187,7 @@ export function TxView({ tx }: { tx: Tx }) {
     <>
       <Crumb chainId={tx.chain} current={tx.coinbase ? "Coinbase" : "Transaction"} />
       <p className="eyebrow">
-        {tx.coinbase ? "Coinbase" : "Transaction"} · {chain.name} ·{" "}
+        {tx.coinbase ? "Coinbase" : "Transaction"} · <ChainName chain={chain.id} /> ·{" "}
         {conf > 0 ? <span className="up">Confirmed</span> : <span className="down">Waiting</span>}
       </p>
       <h1>{headline}</h1>
@@ -253,7 +254,7 @@ export function AddressView({ address }: { address: Address }) {
   return (
     <>
       <Crumb chainId={address.chain} current={address.label ?? "Address"} />
-      <p className="eyebrow">Address · {chain.name}{address.label ? ` · ${address.label}` : ""}</p>
+      <p className="eyebrow">Address · <ChainName chain={chain.id} />{address.label ? ` · ${address.label}` : ""}</p>
       <h1 className="balance">
         <span className="vh">Balance </span>
         {formatCoin(address.balance, chain).replace(` ${chain.ticker}`, "")}

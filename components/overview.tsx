@@ -3,6 +3,7 @@ import { chains, getToken, latestBlocks, mempool, recentTxs, tokensOn } from "@/
 import { formatAge, formatBytes, formatChange, formatCoin, formatCompact, formatNumber, formatTokenAmount, shortId } from "@/lib/format";
 import type { ChainId } from "@/lib/types";
 import { UnitPrice, UsdPrice } from "./money";
+import { ChainName } from "./coin";
 
 export function Overview({
   chainId,
@@ -22,17 +23,16 @@ export function Overview({
     <>
       {syncing ? (
         <div className="banner" role="status">
-          <strong>{chain.name} is still catching up.</strong>
+          <strong><ChainName chain={chain.id} /> is still catching up.</strong>
           <p>
             The server has block {formatNumber(syncing.have)}. The network tip is {formatNumber(syncing.network)}, {syncing.behind} ahead. Figures below are the blocks we already have. Nexa and the news site are unaffected.
           </p>
         </div>
       ) : null}
       <p className="eyebrow">
-        <span className={`pip ${chainId}`} aria-hidden="true" />
-        {chain.name} · {chain.target} blocks
+        <ChainName chain={chain.id} /> · {chain.target} blocks
       </p>
-      <h1>{chain.name}</h1>
+      <h1><ChainName chain={chain.id} /></h1>
       <p className="lead">{chain.about}</p>
       <p className="serverline">
         Read from {chain.serverName} · <a href={chain.apiHref}>API status</a>

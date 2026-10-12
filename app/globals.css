@@ -180,16 +180,6 @@ header.top a:hover { text-decoration-color: var(--gold); }
   border-bottom-color: var(--gold);
 }
 .chains a:hover { color: var(--band-ink); text-decoration: none; }
-.pip {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 99px;
-  margin-inline-end: 7px;
-  transform: translateY(-1px);
-}
-.pip.nexa { background: var(--gold); }
-.pip.bch { background: var(--bch); }
 .hdrtools { display: flex; align-items: center; gap: 8px; }
 .hdrtools a.quiet, .iconbtn, .fiat select {
   color: var(--band-ink);
@@ -641,3 +631,7 @@ footer.foot h2 {
 @media (prefers-reduced-motion: reduce) {
   .skel { animation: none; background: var(--soft); }
 }
+
+/* Coin logos next to Nexa / Bitcoin Cash names */
+.coin { display: inline-flex; align-items: center; gap: 0.3em; white-space: nowrap; }
+.coin-logo { width: 1em; height: 1em; flex: none; vertical-align: -0.125em; display: inline-block; }

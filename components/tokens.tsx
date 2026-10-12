@@ -2,13 +2,14 @@ import Link from "next/link";
 import { chains, getTx, tokensOn } from "@/lib/data";
 import { formatAge, formatNumber, formatTokenAmount, shortId } from "@/lib/format";
 import type { ChainId, TokenInfo } from "@/lib/types";
+import { ChainName } from "./coin";
 
 export function TokenIndex({ chainId }: { chainId: ChainId }) {
   const chain = chains[chainId];
   const list = tokensOn(chainId);
   return (
     <>
-      <p className="eyebrow">Tokens · {chain.name}</p>
+      <p className="eyebrow">Tokens · <ChainName chain={chain.id} /></p>
       <h1>{chainId === "nexa" ? "Group tokens" : "CashTokens"}</h1>
       <p className="lead">
         {chainId === "nexa"
@@ -52,14 +53,14 @@ export function TokenView({ token }: { token: TokenInfo }) {
   return (
     <>
       <nav className="crumb" aria-label="Breadcrumb">
-        <Link href={`/${token.chain}`}>{chain.name}</Link>
+        <Link href={`/${token.chain}`}><ChainName chain={chain.id} /></Link>
         <span aria-hidden="true"> · </span>
         <Link href={`/${token.chain}/tokens`}>Tokens</Link>
         <span aria-hidden="true"> · </span>
         <span>{token.ticker}</span>
       </nav>
       <p className="eyebrow">
-        Token · {chain.name} · {token.kind}
+        Token · <ChainName chain={chain.id} /> · {token.kind}
       </p>
       <h1>{token.ticker}</h1>
       <p className="lead">{token.name}. {token.about}</p>
@@ -79,7 +80,7 @@ export function TokenView({ token }: { token: TokenInfo }) {
         <div>
           <dt>Chain</dt>
           <dd>
-            <Link href={`/${token.chain}`}>{chain.name}</Link>
+            <Link href={`/${token.chain}`}><ChainName chain={chain.id} /></Link>
           </dd>
         </div>
       </dl>
