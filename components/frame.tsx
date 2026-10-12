@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { chains } from "@/lib/data";
 import type { ChainId, Fiat } from "@/lib/types";
 import { PrefsProvider, usePrefs } from "./prefs";
 import { ChainName } from "./coin";
@@ -64,7 +63,7 @@ function Shell({ chain, children }: { chain?: ChainId; children: ReactNode }) {
             <nav className="chains" aria-label="Chain">
               {(["nexa", "bch"] as ChainId[]).map((id) => (
                 <Link key={id} href={`/${id}`} aria-current={id === resolved ? "page" : undefined}>
-                                    <ChainName chain={id} />
+                  <ChainName chain={id} />
                 </Link>
               ))}
             </nav>
