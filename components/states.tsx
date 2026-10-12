@@ -3,6 +3,7 @@ import { chains, mempool } from "@/lib/data";
 import { formatCoin, formatNumber, shortId } from "@/lib/format";
 import type { ChainId, SearchHit } from "@/lib/types";
 import { Frame } from "./frame";
+import { ChainName } from "./coin";
 
 export function Results({ q, hits }: { q: string; hits: SearchHit[] }) {
   return (
@@ -16,8 +17,7 @@ export function Results({ q, hits }: { q: string; hits: SearchHit[] }) {
         {hits.map((hit) => (
           <Link className="result" key={hit.href} href={hit.href}>
             <span className="kind">
-              <span className={`pip ${hit.chain}`} aria-hidden="true" />
-              {hit.kind} · {chains[hit.chain].name}
+              {hit.kind} · <ChainName chain={hit.chain} />
             </span>
             <span>
               <strong>{hit.title}</strong>
@@ -72,7 +72,7 @@ export function Fault() {
 export function LoadingState() {
   return (
     <>
-      <p className="eyebrow">Nexa</p>
+      <p className="eyebrow"><ChainName chain="nexa" /></p>
       <span className="skel" style={{ height: 52, width: "42%", margin: "8px 0 14px" }} />
       <span className="skel" style={{ height: 18, width: "70%", marginBottom: 8 }} />
       <span className="skel" style={{ height: 18, width: "54%", marginBottom: 22 }} />
@@ -94,7 +94,7 @@ export function EmptyMempool({ chainId }: { chainId: ChainId }) {
   const chain = chains[chainId];
   return (
     <>
-      <p className="eyebrow">Mempool · {chain.name}</p>
+      <p className="eyebrow">Mempool · <ChainName chain={chain.id} /></p>
       <h1>Nothing is waiting</h1>
       <p className="lead">The next block will be only the miner’s reward, unless a transaction arrives before it is found.</p>
       <p>
@@ -114,7 +114,7 @@ export function MempoolView({ chainId, empty = false }: { chainId: ChainId; empt
   const rest = Math.max(0, chain.mempoolCount - shown);
   return (
     <>
-      <p className="eyebrow">Mempool · {chain.name}</p>
+      <p className="eyebrow">Mempool · <ChainName chain={chain.id} /></p>
       <h1 className="num">{formatNumber(chain.mempoolCount)} waiting</h1>
       <p className="lead">
         {rest > 0
