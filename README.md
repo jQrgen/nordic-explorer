@@ -56,7 +56,7 @@ npm run lint
 npm run build
 ```
 
-The Nexa tokens page reads `/data/nexa-tokens.json`, written hourly on the server by `deploy/token-stats.mjs` (`token-stats.service` + `token-stats.timer`) from the [explorer.nexa.org Token Tracker](https://explorer.nexa.org/tokens). nginx serves it from `/var/www/explorer-data/` (see `deploy/nginx-explorer.conf`).
+The Nexa tokens page reads `/data/nexa-tokens.json`, written hourly on the server by `deploy/token-index.mjs` (`token-stats.service` + `token-stats.timer`). It walks blocks from the local nexad over RPC (`getblock` verbosity 2 exposes each output's token group), counts the transactions touching each group, tracks live token UTXOs for holder counts, and reads names and tickers from Rostrum's `token.genesis.info`. State is kept in `/var/lib/explorer-token-index/state.json`; the first run indexes the whole chain (about an hour), later runs only the new blocks. The service runs as `electrum` to read nexad's RPC cookie, so `/var/www/explorer-data` must be writable by it. nginx serves it from `/var/www/explorer-data/` (see `deploy/nginx-explorer.conf`).
 
 ## Deploy
 

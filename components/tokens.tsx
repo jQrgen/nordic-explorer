@@ -68,8 +68,8 @@ function TopTokens({ chainId }: { chainId: ChainId }) {
     <section className="toptokens">
       <h2>Tokens by transfers</h2>
       <p className="muted">
-        {formatNumber(data.tokens.length)} tokens, most transfers first. Source: <a href={data.source}>explorer.nexa.org Token Tracker</a>, block{" "}
-        {formatNumber(data.lastBlock)}, fetched {new Date(data.fetchedAt).toLocaleString()}.
+        {formatNumber(data.tokens.length)} tokens, most transfers first. Indexed from our own Nexa node up to block{" "}
+        {formatNumber(data.lastBlock)}, updated {new Date(data.fetchedAt).toLocaleString()}.
       </p>
       <table className="ledger">
         <thead>
