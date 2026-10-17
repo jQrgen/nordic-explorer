@@ -57,3 +57,15 @@ npm run build
 ```
 
 The Nexa tokens page reads `/data/nexa-tokens.json`, written hourly on the server by `deploy/token-stats.mjs` (`token-stats.service` + `token-stats.timer`) from the [explorer.nexa.org Token Tracker](https://explorer.nexa.org/tokens). nginx serves it from `/var/www/explorer-data/` (see `deploy/nginx-explorer.conf`).
+
+## Deploy
+
+`.github/workflows/deploy-explorer.yml` runs on every push to `main` (and by hand): `npm ci`, `npm test`, `npm run build`, then rsync of `out/` to `/var/www/explorer` on electrum-1. It needs the Actions secret `EXPLORER_SSH_KEY`, a key restricted server-side to rrsync into `/var/www/explorer`. nginx config and the token-stats timer in `deploy/` are installed by hand.
+
+## History
+
+This code lived in `explorer/` of [nordic-crypto](https://github.com/nordic-crypto-org/nordic-crypto) until 17 Oct 2026; that history is merged here on top of the first prototype commit.
+
+## License
+
+MIT, see [LICENSE](LICENSE).

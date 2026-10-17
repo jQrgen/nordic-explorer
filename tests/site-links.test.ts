@@ -11,7 +11,7 @@ test("footer links follow the front page, then the way back", () => {
       ["Follow on X", "https://x.com/nordiccryptobot", ""],
       ["Follow on Facebook", "https://www.facebook.com/profile.php?id=61595548315551", ""],
       ["Watch on YouTube", "https://www.youtube.com/@NordicCryptoTV", ""],
-      ["Source code", "https://github.com/nordic-crypto-org/nordic-crypto/tree/main/explorer", ""],
+      ["Source code", "https://github.com/nordic-crypto-org/nordic-explorer", ""],
       ["RSS", "https://nordiccrypto.no/rss.xml", ""],
     ],
   );

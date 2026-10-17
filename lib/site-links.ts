@@ -1,5 +1,5 @@
 /** The explorer's source, a folder in the site repo. */
-export const sourceHref = "https://github.com/nordic-crypto-org/nordic-crypto/tree/main/explorer";
+export const sourceHref = "https://github.com/nordic-crypto-org/nordic-explorer";
 
 /**
  * Links from the nordiccrypto.no front page, in the order a reader meets them.

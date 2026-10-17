@@ -180,7 +180,7 @@ const footerHrefs = [
   "https://x.com/nordiccryptobot",
   "https://www.facebook.com/profile.php?id=61595548315551",
   "https://www.youtube.com/@NordicCryptoTV",
-  "https://github.com/nordic-crypto-org/nordic-crypto/tree/main/explorer",
+  "https://github.com/nordic-crypto-org/nordic-explorer",
   "https://nordiccrypto.no/rss.xml",
   "https://nordiccrypto.no/",
 ];
