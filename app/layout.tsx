@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { Cormorant_Garamond, IBM_Plex_Mono, Schibsted_Grotesk } from "next/font/google";
+import { rootSocial } from "@/lib/social";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -20,13 +20,7 @@ const mono = IBM_Plex_Mono({
   variable: "--font-mono",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Nordic Crypto Explorer",
-    template: "%s · Nordic Crypto Explorer",
-  },
-  description: "Design prototype of a Nexa and Bitcoin Cash explorer for explorer.nordiccrypto.no.",
-};
+export const metadata = rootSocial();
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -34,7 +28,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=new URLSearchParams(location.search).get("theme");if(t==="dark"||t==="light")localStorage.setItem("nc-theme",t);if(localStorage.getItem("nc-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}`,
+            __html: `try{var t=new URLSearchParams(location.search).get("theme");if(t==="dark"||t==="light")localStorage.setItem("nc-theme",t);if(localStorage.getItem("nc-theme")==="dark")document.documentElement.setAttribute("data-theme","dark");var m=location.pathname.match(/^\\/(bch|nexa|btc)\\/(block|tx|address|token)\\/([^/]+)\\/?$/);if(m){var key={block:/^[0-9a-f]{64}$/i.test(m[3])?"hash":"height",tx:"txid",address:"address",token:"id"}[m[2]];location.replace("/"+m[1]+"/"+m[2]+"/?"+key+"="+encodeURIComponent(decodeURIComponent(m[3])))}}catch(e){}`,
           }}
         />
       </head>

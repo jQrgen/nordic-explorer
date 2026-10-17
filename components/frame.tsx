@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { chains } from "@/lib/data";
+import { chainOrder, chains, defaultChain, isChainId } from "@/lib/chains";
 import type { ChainId, Fiat } from "@/lib/types";
+import { PricesProvider } from "./money";
 import { PrefsProvider, usePrefs } from "./prefs";
+import { SiteLinks } from "./site-links";
+import { sourceHref } from "@/lib/site-links";
 
 const FIATS: Fiat[] = ["NOK", "SEK", "DKK", "EUR", "USD"];
 
@@ -24,7 +27,8 @@ function Shield() {
 function Shell({ chain, children }: { chain?: ChainId; children: ReactNode }) {
   const path = usePathname();
   const router = useRouter();
-  const resolved: ChainId = chain ?? (path.startsWith("/bch") ? "bch" : "nexa");
+  const segment = path.split("/")[1] ?? "";
+  const resolved: ChainId = chain ?? (isChainId(segment) ? segment : defaultChain);
   const { fiat, setFiat } = usePrefs();
   const section = path.includes("/mempool") ? "mempool" : path.includes("/token") ? "tokens" : "overview";
 
@@ -43,9 +47,6 @@ function Shell({ chain, children }: { chain?: ChainId; children: ReactNode }) {
 
   return (
     <>
-      <a className="skip" href="#content">
-        Skip to content
-      </a>
       <header className="top">
         <div className="wrap">
           <div className="brandrow">
@@ -61,17 +62,14 @@ function Shell({ chain, children }: { chain?: ChainId; children: ReactNode }) {
               </span>
             </Link>
             <nav className="chains" aria-label="Chain">
-              {(["nexa", "bch"] as ChainId[]).map((id) => (
+              {chainOrder.map((id) => (
                 <Link key={id} href={`/${id}`} aria-current={id === resolved ? "page" : undefined}>
-                  <span className={`pip ${id}`} aria-hidden="true" />
+                  <img className="coin" src={`/coins/${id}.svg`} alt="" width={16} height={16} />
                   {chains[id].name}
                 </Link>
               ))}
             </nav>
             <div className="hdrtools">
-              <a className="quiet" href="https://nordiccrypto.no/">
-                News
-              </a>
               <label className="fiat">
                 <span className="vh">Fiat currency</span>
                 <select value={fiat} onChange={(event) => setFiat(event.target.value as Fiat)} aria-label="Fiat currency">
@@ -128,17 +126,16 @@ function Shell({ chain, children }: { chain?: ChainId; children: ReactNode }) {
             <Link href={`/${resolved}/mempool`} aria-current={section === "mempool" ? "page" : undefined}>
               Mempool
             </Link>
-            <Link href={`/${resolved}/tokens`} aria-current={section === "tokens" ? "page" : undefined}>
-              Tokens
-            </Link>
+            {chains[resolved].tokens ? (
+              <Link href={`/${resolved}/tokens`} aria-current={section === "tokens" ? "page" : undefined}>
+                Tokens
+              </Link>
+            ) : null}
           </nav>
         </div>
       </header>
       <main id="content" className="wrap" tabIndex={-1}>
         {children}
-        <p className="note">
-          Sample figures for this design, as of 12 Oct 2026, 19:08 UTC. Not live chain data, and not investment advice.
-        </p>
       </main>
       <footer className="foot">
         <div className="wrap footgrid">
@@ -146,36 +143,46 @@ function Shell({ chain, children }: { chain?: ChainId; children: ReactNode }) {
             <p className="word">
               Nordic <span>Crypto</span>
             </p>
-            <p>A Nexa and Bitcoin Cash explorer, set in the same type as the news site.</p>
+            <p>A Bitcoin Cash, Nexa and Bitcoin explorer, set in the same type as the news site.</p>
+            <p>
+              Bitcoin data from <a href="https://mempool.space/">mempool.space</a>, read in your browser.
+            </p>
           </div>
           <div>
             <h2>Chains</h2>
             <ul>
-              <li><Link href="/nexa">Nexa</Link></li>
-              <li><Link href="/bch">Bitcoin Cash</Link></li>
+              {chainOrder.map((id) => (
+                <li key={id}>
+                  <Link href={`/${id}`}>{chains[id].name}</Link>
+                </li>
+              ))}
               <li><Link href={`/${resolved}/mempool`}>Mempool</Link></li>
-              <li><Link href={`/${resolved}/tokens`}>Tokens</Link></li>
+              {chains[resolved].tokens ? <li><Link href={`/${resolved}/tokens`}>Tokens</Link></li> : null}
             </ul>
           </div>
           <div>
             <h2>Read from</h2>
             <ul>
+              <li><a href="https://nordiccrypto.no/api/">Bitcoin Cash Fulcrum, port 50004</a></li>
               <li><a href="https://nordiccrypto.no/api/">Nexa Rostrum, port 20004</a></li>
-              <li><a href="https://nordiccrypto.no/api/">Bitcoin Cash Rostrum, port 50004</a></li>
+              <li><a href="https://mempool.space/docs/api/rest">Bitcoin: mempool.space API</a></li>
               <li><a href="https://nordiccrypto.no/">nordiccrypto.no</a></li>
-              <li><a href="https://github.com/jQrgen/nordic-crypto">Source on GitHub</a></li>
+              <li><a href={sourceHref}>Source on GitHub</a></li>
             </ul>
           </div>
           <div>
             <h2>Layout states</h2>
             <ul>
               <li><Link href="/design/loading">Loading</Link></li>
-              <li><Link href="/search?q=not-a-thing&chain=nexa">Nothing found</Link></li>
+              <li><Link href={`/search?q=not-a-thing&chain=${defaultChain}`}>Nothing found</Link></li>
               <li><Link href="/design/catching-up">Catching up</Link></li>
               <li><Link href="/design/empty-mempool">Empty mempool</Link></li>
               <li><Link href="/design/fault">Could not load</Link></li>
             </ul>
           </div>
+        </div>
+        <div className="wrap footlinks">
+          <SiteLinks />
         </div>
       </footer>
     </>
@@ -185,7 +192,9 @@ function Shell({ chain, children }: { chain?: ChainId; children: ReactNode }) {
 export function Frame({ chain, children }: { chain?: ChainId; children: ReactNode }) {
   return (
     <PrefsProvider>
-      <Shell chain={chain}>{children}</Shell>
+      <PricesProvider>
+        <Shell chain={chain}>{children}</Shell>
+      </PricesProvider>
     </PrefsProvider>
   );
 }
