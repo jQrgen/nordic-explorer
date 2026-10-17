@@ -53,20 +53,26 @@ for (let h = s.height + 1; h <= target; h += BATCH) {
 }
 save();
 
-// Names and tickers from rostrum's token.genesis.info, fetched once per token.
+// Names and tickers from rostrum's token.genesis.info. Failed lookups are not cached and entries
+// without a name or ticker are retried each run (rostrum times out on busy tokens until warm).
 function electrum(method, params) {
   return new Promise((resolve, reject) => {
     const c = connect(Number(rPort), rHost, () => c.write(JSON.stringify({ id: 1, method, params }) + "\n"));
-    let buf = ""; c.setTimeout(10_000, () => { c.destroy(); reject(new Error("timeout")); });
+    let buf = ""; c.setTimeout(15_000, () => { c.destroy(); reject(new Error("timeout")); });
     c.on("data", (d) => { buf += d; if (buf.includes("\n")) { c.end(); const r = JSON.parse(buf); if (r.error) reject(new Error(r.error.message)); else resolve(r.result); } });
     c.on("error", reject);
   });
 }
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let failed = 0;
 for (const g of Object.keys(s.tokens)) {
-  if (s.meta[g] || g.length > 66) continue; // skip subgroups (NFTs); parent groups are 66 chars
-  try { const i = await electrum("token.genesis.info", [g]); s.meta[g] = { name: i.name ?? null, ticker: i.ticker ?? null }; }
-  catch { s.meta[g] = { name: null, ticker: null }; }
+  if (s.meta[g]?.name || s.meta[g]?.ticker || g.length > 66) continue; // skip subgroups (NFTs); parent groups are 66 chars
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try { const i = await electrum("token.genesis.info", [g]); s.meta[g] = { name: i.name ?? null, ticker: i.ticker ?? null }; break; }
+    catch { if (attempt < 3) await sleep(2_000 * attempt); else failed++; } // leave uncached so the next run retries
+  }
 }
+if (failed) console.log(`${failed} token name lookups failed, will retry next run`);
 save();
 
 const holders = {};
