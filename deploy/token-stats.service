@@ -1,14 +1,17 @@
 [Unit]
-Description=Nordic Crypto Explorer Nexa token list (explorer.nexa.org Token Tracker)
-After=network-online.target
+Description=Nordic Crypto Explorer Nexa token list (indexed from local nexad)
+After=network-online.target nexad.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/node /opt/explorer-token-stats/token-stats.mjs /var/www/explorer-data/nexa-tokens.json
-User=www-data
+# electrum owns nexad's RPC cookie; state lives in /var/lib/explorer-token-index
+ExecStart=/usr/bin/node /opt/explorer-token-stats/token-index.mjs /var/lib/explorer-token-index/state.json /var/www/explorer-data/nexa-tokens.json
+User=electrum
+StateDirectory=explorer-token-index
 NoNewPrivileges=yes
 ProtectSystem=strict
+ReadOnlyPaths=/mnt/HC_Volume_107087011/nexa/.cookie
 ReadWritePaths=/var/www/explorer-data
 ProtectHome=yes
 PrivateTmp=yes
-MemoryMax=128M
+MemoryMax=768M
