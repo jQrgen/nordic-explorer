@@ -58,7 +58,7 @@ function electrum(method, params) {
   return new Promise((resolve, reject) => {
     const c = connect(Number(rPort), rHost, () => c.write(JSON.stringify({ id: 1, method, params }) + "\n"));
     let buf = ""; c.setTimeout(10_000, () => { c.destroy(); reject(new Error("timeout")); });
-    c.on("data", (d) => { buf += d; if (buf.includes("\n")) { c.end(); const r = JSON.parse(buf); r.error ? reject(new Error(r.error.message)) : resolve(r.result); } });
+    c.on("data", (d) => { buf += d; if (buf.includes("\n")) { c.end(); const r = JSON.parse(buf); if (r.error) reject(new Error(r.error.message)); else resolve(r.result); } });
     c.on("error", reject);
   });
 }
